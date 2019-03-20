@@ -1,0 +1,50 @@
+import re
+import os
+from difflib import SequenceMatcher
+class Text:
+    def __init__(self, raw_text, label, removeStopwords=True):
+        if type(raw_text) == list:
+            self.text = ' \n '.join(raw_text)
+        else:
+            self.text = raw_text
+        self.label = label
+        self.preprocess(self.text)
+        self.tokens = self.getTokens(removeStopwords)
+        self.trigrams = self.ngrams(3)
+
+ 
+      
+        tokenizer = nltk.RegexpTokenizer('[a-zA-Z]\w+\'?\w*') 
+        spans = list(tokenizer.span_tokenize(self.text))
+       
+        self.length = spans[-1][-1]
+        tokens = tokenizer.tokenize(self.text)
+        tokens = [ token.lower() for token in tokens ]
+        stemmer = LancasterStemmer()
+        tokens = [ stemmer.stem(token) for token in tokens ]
+        if not removeStopwords:
+            self.spans = spans
+            return tokens
+        tokenSpans = list(zip(tokens, spans))
+        stopwords = nltk.corpus.stopwords.words('english')
+        tokenSpans = [ token for token in tokenSpans if token[0] not in stopwords ]
+        self.spans = [ x[1] for x in tokenSpans ]
+        return [ x[0] for x in tokenSpans ] 
+def extend_matches(self, cutoff=0.4):
+        extended = False
+        for match in self.healed_matches:
+            # Look one word before.
+            wordA = self.textAgrams[(match.a - 1)][0]
+            wordB = self.textBgrams[(match.b - 1)][0]
+            if self.edit_ratio(wordA, wordB) < cutoff:
+                match.a -= 1
+                match.b -= 1
+                match.sizeA += 1
+                match.sizeB += 1
+                match.extendedBackwards += 1
+                extended = True
+           
+            idxA = match.a + match.sizeA + 1
+            idxB = match.b + match.sizeB + 1
+            if idxA > len(self.textAgrams)-1 or idxB > len(self.textBgrams)-1:
+               
